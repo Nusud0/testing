@@ -17,6 +17,13 @@ async def get_all_users(db: AsyncSession):
 
     return users
 
+async def get_user_by_id(id: int, db: AsyncSession):
+    result = await db.execute(select(User).where(User.id == id))
+
+    user = result.scalar_one_or_none()
+
+    return user
+
 
 async def create_user(user: UserCreate, db: AsyncSession):
     new_user = User(**user.model_dump()) 
