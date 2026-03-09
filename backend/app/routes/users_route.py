@@ -12,9 +12,9 @@ user_router = APIRouter(
 )
 
 @user_router.get("/")
-async def get_users():
-    return user_repository.get_all_users()
+async def get_users(db: AsyncSession = Depends(get_db)):
+    return await user_repository.get_all_users(db)
 
 @user_router.post("/create")
-async def get_users(user: UserCreate):
-    return user_repository.create_user(user)
+async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    return await user_repository.create_user(user, db)

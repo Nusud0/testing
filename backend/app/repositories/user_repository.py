@@ -7,7 +7,7 @@ from ..models.user_model import User
 from ..schemas.user_schemas import UserCreate, UserGet
 
 
-async def get_all_users(db: AsyncSession = Depends(get_db)):
+async def get_all_users(db: AsyncSession):
     result = await db.execute(select(User))
 
     users = result.scalars().all()
@@ -18,7 +18,7 @@ async def get_all_users(db: AsyncSession = Depends(get_db)):
     return users
 
 
-async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user(user: UserCreate, db: AsyncSession):
     new_user = User(**user.model_dump()) 
         
     db.add(new_user)  # БЕЗ await!
