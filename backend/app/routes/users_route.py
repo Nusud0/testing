@@ -23,6 +23,6 @@ async def get_user_id(user_id: int, db: AsyncSession = Depends(get_db)):
 
 @user_router.post("/create", response_model=UserCreate, status_code=status.HTTP_200_OK)
 async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    service = UserService
-    return await service.create_user(user_data=user)
+    service = UserService()
+    return await service.create_user(user)
 
