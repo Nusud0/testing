@@ -32,3 +32,12 @@ class UserService:
                 detail=f"User data {user_data.name} not validate"
             )
         return UserResponse.model_validate(user)
+
+    async def update_user_password(self, user_id: int, new_user_password) -> UserResponse:
+        user = await self.user_repository.update_password(user_id, new_user_password)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"User data {user.name} not validate"
+            )
+        return UserResponse.model_validate(user)

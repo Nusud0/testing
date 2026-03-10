@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -42,3 +42,22 @@ class UserRepository:
             raise HTTPException(status_code=400, detail=str(e))
                 
         return new_user
+
+    async def update_password(self, user_id: int, user_new_password: int) -> User:
+        user = await self.get_by_id(user_id)
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+                )
+        
+        user.password = user_new_password
+
+        try:
+            await self.db.commit()
+            await self.db.refresh(user)
+            return user
+        except Exception as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))

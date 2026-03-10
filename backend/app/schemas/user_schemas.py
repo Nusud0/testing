@@ -3,11 +3,13 @@ from pydantic import BaseModel, Field, ConfigDict
 class UserResponse(BaseModel):
     id: int = Field(..., description="User ID")
     name: str = Field(..., description="User name")
+    password: int = Field(..., description="User password")
 
     model_config = ConfigDict(from_attributes=True)
 
 class UserCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=50, description="User name")
+    password: int = Field(..., min_length=8, max_length=30, description="User password")
 
     model_config = ConfigDict(from_attributes=True)
 

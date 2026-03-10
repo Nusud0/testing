@@ -26,3 +26,7 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     return await service.create_user(user)
 
+@user_router.put('/update-password/{user_new_password}', response_model=UserResponse, status_code=status.HTTP_200_OK)
+async def update_user_password(user_new_password: int, db: AsyncSession = Depends(get_db)):
+    service = UserService(db)
+    return await service.update_user_password(user_new_password)
