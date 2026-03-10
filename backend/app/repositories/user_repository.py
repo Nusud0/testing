@@ -4,37 +4,41 @@ from sqlalchemy import select
 
 from database import get_db
 from ..models.user_model import User
-from ..schemas.user_schemas import UserCreate, UserGet
+from ..schemas.user_schemas import UserCreate, UserResponse
 
 
-async def get_all_users(db: AsyncSession):
-    result = await db.execute(select(User))
+class UserRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
-    users = result.scalars().all()
+    async def get_all(self) -> list[User]:
+        result = await self.db.execute(select(User))
 
-    if not users:
-        raise
+        users = result.scalars().all()
 
-    return users
+        if not users:
+            raise
 
-async def get_user_by_id(id: int, db: AsyncSession):
-    result = await db.execute(select(User).where(User.id == id))
+        return users
 
-    user = result.scalar_one_or_none()
+    async def get_by_id(self, id: int) -> User:
+        result = await self.db.execute(select(User).where(User.id == id))
 
-    return user
+        user = result.scalar_one_or_none()
+
+        return user
 
 
-async def create_user(user: UserCreate, db: AsyncSession):
-    new_user = User(**user.model_dump()) 
-        
-    db.add(new_user)  # БЕЗ await!
-        
-    try:
-        await db.commit()      # Сохраняем (с await)
-        await db.refresh(new_user) # Обновляем объект, чтобы получить ID из БД
-    except Exception as e:
-        await db.rollback()    # Если ошибка (например, email занят), откатываем
-        raise HTTPException(status_code=400, detail=str(e))
+    async def create(self, user_data: UserCreate) -> User:
+        new_user = User(**user_data.model_dump()) 
             
-    return new_user
+        self.db.add(new_user)  # БЕЗ await!
+            
+        try:
+            await self.db.commit()      # Сохраняем (с await)
+            await self.db.refresh(new_user) # Обновляем объект, чтобы получить ID из БД
+        except Exception as e:
+            await self.db.rollback()    # Если ошибка (например, email занят), откатываем
+            raise HTTPException(status_code=400, detail=str(e))
+                
+        return new_user
