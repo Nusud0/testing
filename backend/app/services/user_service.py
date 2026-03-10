@@ -29,6 +29,6 @@ class UserService:
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"User data {user_data} not validate"
+                detail=f"User data {user_data.name} not validate"
             )
         return UserResponse.model_validate(user)
