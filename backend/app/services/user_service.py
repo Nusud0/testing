@@ -10,12 +10,12 @@ class UserService:
 
 
     async def get_all_users(self) -> UserListResponse:
-        users = self.user_repository.get_all()
+        users = await self.user_repository.get_all()
         users_response = [UserResponse.model_validate(user) for user in users]
         return UserListResponse(users=users_response, total=len(users_response))
     
     async def get_user_by_id(self, user_id: int) -> UserResponse:
-        user = self.user_repository.get_by_id(id)
+        user = await self.user_repository.get_by_id(id)
 
         if not user:
             raise HTTPException(
@@ -25,10 +25,10 @@ class UserService:
         return UserResponse.model_validate(user)
     
     async def create_user(self, user_data: UserCreate) -> UserResponse:
-        user = self.user_repository.create(user_data)
+        user = await self.user_repository.create(user_data)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"User data {user_data} not validate"
             )
-        return UserResponse.model_validate(user)
+        return user

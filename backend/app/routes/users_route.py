@@ -14,7 +14,7 @@ user_router = APIRouter(
 @user_router.get("/", response_model=UserListResponse, status_code=status.HTTP_200_OK)
 async def get_users(db: AsyncSession = Depends(get_db)):
     service = UserService(db)
-    return service.get_all_users()
+    return await service.get_all_users()
 
 @user_router.get("/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
 async def get_user_id(user_id: int, db: AsyncSession = Depends(get_db)):

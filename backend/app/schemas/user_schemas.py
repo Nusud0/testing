@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class UserResponse(BaseModel):
     id: int = Field(..., description="User ID")
