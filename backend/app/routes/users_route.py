@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from database import get_db
 from ..services.user_service import UserService
-from ..schemas.user_schemas import UserListResponse, UserResponse, UserCreate
+from ..schemas.user_schemas import UserListResponse, UserResponse, UserCreate, UserUpdatePassword
 
 user_router = APIRouter(
     prefix="/users",
@@ -26,7 +26,7 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
     return await service.create_user(user)
 
-@user_router.put('/update-password/{user_new_password}', response_model=UserResponse, status_code=status.HTTP_200_OK)
-async def update_user_password(user_new_password: int, db: AsyncSession = Depends(get_db)):
+@user_router.put("/update-password/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
+async def update_user_password(user_id: int, new_password: UserUpdatePassword, db: AsyncSession = Depends(get_db)):
     service = UserService(db)
-    return await service.update_user_password(user_new_password)
+    return await service.update_user_password(user_id, user_data=new_password)

@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from database import get_db
 from ..models.user_model import User
-from ..schemas.user_schemas import UserCreate, UserResponse
+from ..schemas.user_schemas import UserCreate, UserResponse, UserUpdatePassword 
 
 
 class UserRepository:
@@ -43,7 +43,7 @@ class UserRepository:
                 
         return new_user
 
-    async def update_password(self, user_id: int, user_new_password: int) -> User:
+    async def update_password(self, user_id: int, user_data: UserUpdatePassword) -> User:
         user = await self.get_by_id(user_id)
 
         if not user:
@@ -52,7 +52,7 @@ class UserRepository:
                 detail="User not found"
                 )
         
-        user.password = user_new_password
+        user.password = user_data.password
 
         try:
             await self.db.commit()

@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..repositories.user_repository import UserRepository
-from ..schemas.user_schemas import UserCreate, UserResponse, UserListResponse
+from ..schemas.user_schemas import UserCreate, UserResponse, UserListResponse, UserUpdatePassword
 
 class UserService:
     def __init__(self, db: AsyncSession):
@@ -33,8 +33,8 @@ class UserService:
             )
         return UserResponse.model_validate(user)
 
-    async def update_user_password(self, user_id: int, new_user_password) -> UserResponse:
-        user = await self.user_repository.update_password(user_id, new_user_password)
+    async def update_user_password(self, user_id: int, user_data: UserUpdatePassword) -> UserResponse:
+        user = await self.user_repository.update_password(user_id, user_data)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
