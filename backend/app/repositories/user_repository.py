@@ -5,6 +5,7 @@ from sqlalchemy import select
 from database import get_db
 from ..models.user_model import User
 from ..schemas.user_schemas import UserCreate, UserResponse, UserUpdatePassword 
+from ..core.security import hash_password
 
 
 class UserRepository:
@@ -30,10 +31,16 @@ class UserRepository:
 
 
     async def create(self, user_data: UserCreate) -> User:
-        new_user = User(**user_data.model_dump()) 
-            
-        self.db.add(new_user)  # БЕЗ await!
-            
+        user_dict = user_data.model_dump()
+        
+        plain_password = user_dict.pop("password")
+        hashed_pwd = hash_password(plain_password)
+        user_dict["hashed_password"] = hashed_pwd
+
+        new_user = User(**user_dict)
+
+        self.db.add(new_user)
+
         try:
             await self.db.commit()      # Сохраняем (с await)
             await self.db.refresh(new_user) # Обновляем объект, чтобы получить ID из БД
@@ -52,7 +59,7 @@ class UserRepository:
                 detail="User not found"
                 )
         
-        user.password = user_data.password
+        user.hashed_password = hash_password(user_data.password)
 
         try:
             await self.db.commit()

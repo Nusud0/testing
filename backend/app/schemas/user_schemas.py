@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field, ConfigDict
 class UserResponse(BaseModel):
     id: int = Field(..., description="User ID")
     name: str = Field(..., description="User name")
-    password: str = Field(..., description="User password")
 
     model_config = ConfigDict(from_attributes=True)
 
